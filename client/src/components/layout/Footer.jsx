@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, Phone, MapPin } from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -17,19 +17,19 @@ const Footer = () => {
             <div className="flex space-x-4 pt-2">
               <a href="#" className="text-gray-400 hover:text-[var(--color-primary)] transition-colors">
                 <span className="sr-only">Facebook</span>
-                <Facebook className="h-5 w-5" />
+                <span className="font-bold text-lg">FB</span>
               </a>
               <a href="#" className="text-gray-400 hover:text-[var(--color-primary)] transition-colors">
                 <span className="sr-only">Instagram</span>
-                <Instagram className="h-5 w-5" />
+                <span className="font-bold text-lg">IG</span>
               </a>
               <a href="#" className="text-gray-400 hover:text-[var(--color-primary)] transition-colors">
                 <span className="sr-only">Twitter</span>
-                <Twitter className="h-5 w-5" />
+                <span className="font-bold text-lg">TW</span>
               </a>
               <a href="#" className="text-gray-400 hover:text-[var(--color-primary)] transition-colors">
                 <span className="sr-only">YouTube</span>
-                <Youtube className="h-5 w-5" />
+                <span className="font-bold text-lg">YT</span>
               </a>
             </div>
           </div>

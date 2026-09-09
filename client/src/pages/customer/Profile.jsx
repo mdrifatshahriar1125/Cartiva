@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { User, Lock, Save, AlertCircle, CheckCircle } from 'lucide-react';
 
 const Profile = () => {
-  const { user, login } = useAuth(); // We can use login to update the user context
+  const { user, updateUser } = useAuth();
   
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -45,10 +45,8 @@ const Profile = () => {
 
       const { data } = await axios.put('/api/users/me', { name, email, phone, password }, config);
       
-      // Update local storage and context with new user data
-      localStorage.setItem('user', JSON.stringify(data));
-      // Re-trigger auth context state update by basically "logging in" the updated data
-      login(data);
+      // Update auth context with new user data
+      updateUser(data);
       
       setSuccess(true);
       setPassword('');

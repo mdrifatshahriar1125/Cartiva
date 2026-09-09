@@ -14,6 +14,8 @@ import OrderSuccess from './pages/customer/OrderSuccess';
 import Orders from './pages/customer/Orders';
 import OrderDetails from './pages/customer/OrderDetails';
 import Profile from './pages/customer/Profile';
+import About from './pages/customer/About';
+import NotFound from './pages/NotFound';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
 // Admin Pages
@@ -34,6 +36,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/products" element={<Products />} />
             <Route path="/products/:id" element={<ProductDetails />} />
+            <Route path="/about" element={<About />} />
             
             {/* Auth Routes */}
             <Route path="/login" element={<Login />} />
@@ -73,6 +76,9 @@ function App() {
               <Route path="orders" element={<AdminOrders />} />
               <Route path="customers" element={<AdminCustomers />} />
             </Route>
+
+            {/* 404 */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
         
