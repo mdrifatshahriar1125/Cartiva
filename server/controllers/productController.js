@@ -1,11 +1,23 @@
 import Product from '../models/Product.js';
+import Category from '../models/Category.js';
 
-// @desc    Fetch all products with optional filtering/searching/sorting
+// @desc    Fetch all products with filtering/searching/sorting/pagination
 // @route   GET /api/products
 // @access  Public
 const getProducts = async (req, res) => {
   try {
-    const { category, keyword, sort, featured, limit } = req.query;
+    const { 
+      category, 
+      keyword, 
+      sort, 
+      featured, 
+      minPrice, 
+      maxPrice, 
+      rating, 
+      brand,
+      page = 1,
+      limit = 12
+    } = req.query;
     
     let query = {};
     
@@ -13,7 +25,8 @@ const getProducts = async (req, res) => {
     if (keyword) {
       query.$or = [
         { name: { $regex: keyword, $options: 'i' } },
-        { brand: { $regex: keyword, $options: 'i' } }
+        { brand: { $regex: keyword, $options: 'i' } },
+        { description: { $regex: keyword, $options: 'i' } }
       ];
     }
     
@@ -22,23 +35,64 @@ const getProducts = async (req, res) => {
       query.featured = true;
     }
 
-    // Filter by Category Slug (Need to populate or lookup, but simpler to do two steps or match name)
-    // Actually our Category schema has slug. We'd ideally find category by slug first.
+    // Filter by category slug
     if (category) {
-      // For now, we will handle category filtering by assuming we get the objectId or we do a lookup.
-      // But let's keep it simple: if the frontend sends the category slug, we'll need the Category model
-      // This will be improved in Phase 5.
+      const categoryDoc = await Category.findOne({ slug: category });
+      if (categoryDoc) {
+        query.category = categoryDoc._id;
+      } else {
+        // If category not found, return empty array
+        return res.json({ products: [], page: 1, pages: 0, count: 0 });
+      }
     }
 
+    // Filter by price range
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) query.price.$gte = Number(minPrice);
+      if (maxPrice) query.price.$lte = Number(maxPrice);
+    }
+
+    // Filter by rating
+    if (rating) {
+      query.rating = { $gte: Number(rating) };
+    }
+
+    // Filter by brand
+    if (brand) {
+      query.brand = brand;
+    }
+
+    // Build the query
     let mongooseQuery = Product.find(query).populate('category', 'name slug');
     
-    // Limit
-    if (limit) {
-      mongooseQuery = mongooseQuery.limit(Number(limit));
+    // Sorting
+    if (sort === 'price_asc') {
+      mongooseQuery = mongooseQuery.sort({ price: 1 });
+    } else if (sort === 'price_desc') {
+      mongooseQuery = mongooseQuery.sort({ price: -1 });
+    } else if (sort === 'rating') {
+      mongooseQuery = mongooseQuery.sort({ rating: -1 });
+    } else {
+      mongooseQuery = mongooseQuery.sort({ createdAt: -1 }); // Newest default
     }
+    
+    // Pagination
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+    const skip = (pageNum - 1) * limitNum;
+    
+    const count = await Product.countDocuments(query);
+    mongooseQuery = mongooseQuery.skip(skip).limit(limitNum);
 
     const products = await mongooseQuery;
-    res.json({ products, count: products.length });
+    
+    res.json({ 
+      products, 
+      page: pageNum, 
+      pages: Math.ceil(count / limitNum),
+      count 
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
