@@ -1,17 +1,18 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Heart, Search, User, Menu, X, LogOut, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
+import { useCart } from '../../../context/CartContext';
 import { useState } from 'react';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  const { cartItems } = useCart();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Placeholder for cart items count
-  const cartItemsCount = 0; 
+  const cartItemsCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
   
   const handleLogout = () => {
     logout();

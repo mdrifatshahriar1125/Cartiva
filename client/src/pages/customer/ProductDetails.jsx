@@ -2,9 +2,15 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Star, ShoppingCart, Heart, Minus, Plus, Truck, ArrowLeft, Check } from 'lucide-react';
+import { useCart } from '../../context/CartContext';
+import { useWishlist } from '../../context/WishlistContext';
+import { useAuth } from '../../context/AuthContext';
 
 const ProductDetails = () => {
   const { id } = useParams();
+  const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { user } = useAuth();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -179,6 +185,7 @@ const ProductDetails = () => {
               </div>
 
               <button
+                onClick={() => addToCart(product, qty)}
                 disabled={product.stock === 0}
                 className="flex-1 bg-[var(--color-primary)] border border-transparent rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-white hover:bg-[var(--color-primary-dark)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-primary)] disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors shadow-sm"
               >
@@ -186,8 +193,14 @@ const ProductDetails = () => {
                 {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
               </button>
 
-              <button className="flex items-center justify-center p-3 border border-gray-300 rounded-md text-gray-600 hover:bg-gray-50 hover:text-red-500 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-primary)]">
-                <Heart className="h-6 w-6" />
+              <button
+                onClick={() => {
+                  if (!user) return;
+                  isInWishlist(product._id) ? removeFromWishlist(product._id) : addToWishlist(product._id);
+                }}
+                className={`flex items-center justify-center p-3 border rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-primary)] ${isInWishlist(product._id) ? 'border-red-300 bg-red-50 text-red-500' : 'border-gray-300 text-gray-600 hover:bg-gray-50 hover:text-red-500'}`}
+              >
+                <Heart className={`h-6 w-6 ${isInWishlist(product._id) ? 'fill-current' : ''}`} />
               </button>
             </div>
 

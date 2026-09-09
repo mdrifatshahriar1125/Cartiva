@@ -8,6 +8,8 @@ dotenv.config();
 import userRoutes from './routes/userRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
+import wishlistRoutes from './routes/wishlistRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
 
 const app = express();
 
@@ -20,6 +22,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use('/api/wishlist', wishlistRoutes);
+app.use('/api/orders', orderRoutes);
 
 // Basic route
 app.get('/', (req, res) => {

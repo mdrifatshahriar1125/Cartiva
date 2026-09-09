@@ -1,7 +1,31 @@
 import { Link } from 'react-router-dom';
 import { Star, ShoppingCart, Heart } from 'lucide-react';
+import { useCart } from '../../context/CartContext';
+import { useWishlist } from '../../context/WishlistContext';
+import { useAuth } from '../../context/AuthContext';
 
 const ProductCard = ({ product }) => {
+  const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { user } = useAuth();
+
+  const wishlisted = isInWishlist(product._id);
+
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+    addToCart(product, 1);
+  };
+
+  const handleToggleWishlist = (e) => {
+    e.preventDefault();
+    if (!user) return;
+    if (wishlisted) {
+      removeFromWishlist(product._id);
+    } else {
+      addToWishlist(product._id);
+    }
+  };
+
   return (
     <div className="group relative bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-[var(--color-border)] overflow-hidden flex flex-col h-full">
       {/* Product Image */}
@@ -23,15 +47,18 @@ const ProductCard = ({ product }) => {
           )}
           {product.originalPrice > product.price && (
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500 text-white">
-              Sale
+              -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
             </span>
           )}
         </div>
 
         {/* Quick Actions */}
         <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <button className="p-2 bg-white rounded-full shadow-md text-gray-400 hover:text-red-500 hover:bg-gray-50 transition-colors">
-            <Heart className="h-5 w-5" />
+          <button 
+            onClick={handleToggleWishlist}
+            className={`p-2 rounded-full shadow-md transition-colors ${wishlisted ? 'bg-red-50 text-red-500' : 'bg-white text-gray-400 hover:text-red-500 hover:bg-gray-50'}`}
+          >
+            <Heart className={`h-5 w-5 ${wishlisted ? 'fill-current' : ''}`} />
           </button>
         </div>
       </div>
@@ -79,8 +106,10 @@ const ProductCard = ({ product }) => {
             )}
           </div>
           <button 
-            className="flex items-center justify-center bg-[var(--color-primary-light)] text-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-white p-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-primary)]"
-            title="Add to Cart"
+            onClick={handleAddToCart}
+            disabled={product.stock === 0}
+            className="flex items-center justify-center bg-[var(--color-primary-light)] text-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-white p-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-primary)] disabled:opacity-50 disabled:cursor-not-allowed"
+            title={product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
           >
             <ShoppingCart className="h-5 w-5" />
           </button>
