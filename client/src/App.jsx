@@ -8,10 +8,10 @@ import Products from './pages/customer/Products';
 import ProductDetails from './pages/customer/ProductDetails';
 import Cart from './pages/customer/Cart';
 import Wishlist from './pages/customer/Wishlist';
-import Checkout from './pages/customer/Checkout';
 import OrderSuccess from './pages/customer/OrderSuccess';
 import Orders from './pages/customer/Orders';
 import OrderDetails from './pages/customer/OrderDetails';
+import Profile from './pages/customer/Profile';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
 function App() {
@@ -44,11 +44,8 @@ function App() {
               <ProtectedRoute><OrderSuccess /></ProtectedRoute>
             } />
 
-            {/* Placeholder routes for profile, orders, admin — will be added in next phases */}
             <Route path="/profile" element={
-              <ProtectedRoute>
-                <div className="max-w-7xl mx-auto px-4 py-8"><h1 className="text-2xl font-bold">Profile Page (Coming in Phase 8)</h1></div>
-              </ProtectedRoute>
+              <ProtectedRoute><Profile /></ProtectedRoute>
             } />
             <Route path="/orders" element={
               <ProtectedRoute><Orders /></ProtectedRoute>

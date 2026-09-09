@@ -239,6 +239,118 @@ const ProductDetails = () => {
             )}
           </div>
         </div>
+
+        {/* Reviews Section */}
+        <div className="mt-16 pt-10 border-t border-[var(--color-border)]">
+          <h2 className="text-2xl font-bold text-gray-900 mb-8">Customer Reviews</h2>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            {/* Reviews List */}
+            <div className="lg:col-span-7">
+              {product.reviews && product.reviews.length === 0 ? (
+                <div className="bg-gray-50 rounded-lg p-6 text-center">
+                  <p className="text-gray-500">No reviews yet. Be the first to review this product!</p>
+                </div>
+              ) : (
+                <div className="space-y-8">
+                  {product.reviews.map((review) => (
+                    <div key={review._id} className="border-b border-gray-100 pb-8 last:border-0 last:pb-0">
+                      <div className="flex items-center mb-2">
+                        <div className="flex items-center">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`h-4 w-4 ${
+                                i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <p className="ml-3 text-sm font-medium text-gray-900">{review.name}</p>
+                        <span className="mx-2 text-gray-300">•</span>
+                        <p className="text-sm text-gray-500">
+                          {new Date(review.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="mt-2 text-sm text-gray-700">
+                        <p>{review.comment}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Review Form */}
+            <div className="lg:col-span-5">
+              <div className="bg-gray-50 rounded-2xl p-6 md:p-8">
+                <h3 className="text-lg font-bold text-gray-900 mb-4">Write a Review</h3>
+                
+                {user ? (
+                  <form 
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      try {
+                        const config = { headers: { Authorization: `Bearer ${user.token}` } };
+                        const rating = e.target.rating.value;
+                        const comment = e.target.comment.value;
+                        await axios.post(`/api/products/${product._id}/reviews`, { rating, comment }, config);
+                        alert('Review submitted successfully!');
+                        window.location.reload();
+                      } catch (err) {
+                        alert(err.response?.data?.message || 'Failed to submit review');
+                      }
+                    }}
+                    className="space-y-4"
+                  >
+                    <div>
+                      <label htmlFor="rating" className="block text-sm font-medium text-gray-700">Rating</label>
+                      <select 
+                        id="rating" 
+                        name="rating" 
+                        required
+                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] sm:text-sm rounded-md"
+                      >
+                        <option value="">Select...</option>
+                        <option value="5">5 - Excellent</option>
+                        <option value="4">4 - Very Good</option>
+                        <option value="3">3 - Good</option>
+                        <option value="2">2 - Fair</option>
+                        <option value="1">1 - Poor</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label htmlFor="comment" className="block text-sm font-medium text-gray-700">Review</label>
+                      <textarea
+                        id="comment"
+                        name="comment"
+                        rows="4"
+                        required
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] sm:text-sm"
+                      ></textarea>
+                    </div>
+                    <button
+                      type="submit"
+                      className="w-full bg-[var(--color-primary)] text-white py-2 px-4 rounded-md font-medium hover:bg-[var(--color-primary-dark)] transition-colors"
+                    >
+                      Submit Review
+                    </button>
+                  </form>
+                ) : (
+                  <div className="text-center py-6">
+                    <p className="text-gray-600 mb-4">Please sign in to write a review.</p>
+                    <Link
+                      to="/login"
+                      className="inline-block bg-white text-[var(--color-primary)] border border-[var(--color-primary)] py-2 px-6 rounded-md font-medium hover:bg-gray-50 transition-colors"
+                    >
+                      Sign In
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
