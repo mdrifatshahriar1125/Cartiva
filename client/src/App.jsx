@@ -10,6 +10,8 @@ import Cart from './pages/customer/Cart';
 import Wishlist from './pages/customer/Wishlist';
 import Checkout from './pages/customer/Checkout';
 import OrderSuccess from './pages/customer/OrderSuccess';
+import Orders from './pages/customer/Orders';
+import OrderDetails from './pages/customer/OrderDetails';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
 function App() {
@@ -49,9 +51,10 @@ function App() {
               </ProtectedRoute>
             } />
             <Route path="/orders" element={
-              <ProtectedRoute>
-                <div className="max-w-7xl mx-auto px-4 py-8"><h1 className="text-2xl font-bold">My Orders (Coming in Phase 7)</h1></div>
-              </ProtectedRoute>
+              <ProtectedRoute><Orders /></ProtectedRoute>
+            } />
+            <Route path="/orders/:id" element={
+              <ProtectedRoute><OrderDetails /></ProtectedRoute>
             } />
             <Route path="/admin" element={
               <ProtectedRoute adminOnly={true}>
